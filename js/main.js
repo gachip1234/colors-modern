@@ -1,5 +1,31 @@
+// 1. Nhập các hàm cần thiết từ thư viện CDN của Firebase đám mây
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  push,
+  onValue,
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+// 2. ĐẠI BẢN DOANH: Cấu hình chìa khóa kết nối Firebase của em (THAY ĐOẠN NÀY BẰNG CONFIG CỦA EM)
+const firebaseConfig = {
+  apiKey: "AIzaSyCfOeqfSm4B4TiiHn_HJVLMHUXhPkM1f4g",
+  authDomain: "colors-modern.firebaseapp.com",
+  databaseURL:
+    "https://colors-modern-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "colors-modern",
+  storageBucket: "colors-modern.firebasestorage.app",
+  messagingSenderId: "735993305588",
+  appId: "1:735993305588:web:566978b3eba799d3fbc1a1",
+};
+
+// Khởi tạo ứng dụng kết nối Cloud
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const globalColorsRef = ref(db, "global_colors"); // Đặt tên bảng dữ liệu trên mây là "global_colors"
+
 document.addEventListener("DOMContentLoaded", () => {
-  // --- 1. TÍNH NĂNG CLICK TO COPY ---
+  // --- TÍNH NĂNG 1: CLICK TO COPY ---
   const colorCodes = document.querySelectorAll(".color-card__code");
   colorCodes.forEach((codeElement) => {
     codeElement.style.cursor = "pointer";
@@ -16,50 +42,37 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // --- 2. TÍNH NĂNG DIALOG MENU MOBILE (NÂNG CẤP) ---
+  // --- TÍNH NĂNG 2: DIALOG MENU MOBILE (Toán học tọa độ) ---
   const hamburgerMenu = document.querySelector(".hamburger-menu");
   const dialogMenu = document.getElementById("mobile-menu-dialog");
-  const closeMenuBtn = document.getElementById("close-menu-btn"); // Nút X mới
+  const closeMenuBtn = document.getElementById("close-menu-btn");
   const navLinks = document.querySelectorAll(".main-header__link");
 
-  // Bấm nút Hamburger ở ngoài -> Mở Dialog
   hamburgerMenu.addEventListener("click", () => {
     dialogMenu.showModal();
   });
-
-  // Bấm nút X ở trong -> Đóng Dialog
   closeMenuBtn.addEventListener("click", () => {
     dialogMenu.close();
   });
 
-  // Bấm ra vùng ngoài màn hình (lớp nền mờ) -> Cũng tự đóng Dialog
   dialogMenu.addEventListener("click", (e) => {
-    // 1. Lấy ra khung tọa độ vị trí thực tế của hộp Menu trắng (Bốn cạnh: Trên, Dưới, Trái, Phải)
     const rect = dialogMenu.getBoundingClientRect();
-
-    // 2. Logic kiểm tra: Nếu vị trí click của chuột (clientX, clientY)
-    // nằm HOÀN TOÀN RA NGOÀI phạm vi 4 cạnh của hộp Menu...
-    const isClickOutside =
+    if (
       e.clientX < rect.left ||
       e.clientX > rect.right ||
       e.clientY < rect.top ||
-      e.clientY > rect.bottom;
-
-    // 3. ...Thì trình duyệt hiểu là user đang click trúng vào lớp nền mờ ::backdrop -> Đóng menu!
-    if (isClickOutside) {
-      hamburgerMenu.classList.remove("is-open"); // Trả nút hamburger về 3 gạch
-      dialogMenu.close(); // Đóng cửa sổ dialog
+      e.clientY > rect.bottom
+    ) {
+      dialogMenu.close();
     }
   });
-
-  // Bấm vào các link menu -> Di chuyển đến khu vực và tự đóng Dialog
   navLinks.forEach((link) => {
     link.addEventListener("click", () => {
       dialogMenu.close();
     });
   });
 
-  // --- 3. TÍNH NĂNG COLOR LAB & FETCH API ---
+  // --- TÍNH NĂNG 3: COLOR LAB & API TRA CỨU TÊN MÀU ---
   const hexInput = document.getElementById("hex-input");
   const colorPreview = document.getElementById("color-preview");
   const colorNameSpan = document.getElementById("color-name");
@@ -91,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- 4. TÍNH NĂNG LƯU TRỮ LOCALSTORAGE ---
+  // --- TÍNH NĂNG 4: BỘ SƯU TẬP CÁ NHÂN (LOCALSTORAGE) ---
   const saveColorBtn = document.getElementById("save-color-btn");
   const savedColorsGrid = document.getElementById("saved-colors-grid");
 
@@ -108,32 +121,28 @@ document.addEventListener("DOMContentLoaded", () => {
         '<span style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">Chưa có màu nào được lưu.</span>';
       return;
     }
-    // Duyệt mảng màu và tạo các thẻ mini-card (Tìm đoạn này trong script.js và cập nhật)
     colors.forEach((colorObj, index) => {
       const miniCard = document.createElement("div");
-      miniCard.style.cssText = `
-                background: ${colorObj.hex}; 
-                color: #fff; 
-                padding: 0.5rem 1rem; 
-                border-radius: 6px; 
-                font-size: 0.85rem; 
-                font-weight: bold; 
-                text-shadow: 1px 1px 2px rgba(0,0,0,0.6); 
-                display: flex; 
-                align-items: center; 
-                gap: 12px; 
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            `;
-
-      // NÂNG CẤP: Ép kiểu dáng nổi bật cho nút Xóa (Nút X)
-      miniCard.innerHTML = `
-    <span>${colorObj.name} (${colorObj.hex})</span>
-    <button class="delete-btn" data-index="${index}">X</button>
-`;
+      miniCard.style.cssText = `background: ${colorObj.hex}; color: #fff; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);`;
+      miniCard.innerHTML = `<span>${colorObj.name} (${colorObj.hex})</span><button class="delete-btn" data-index="${index}">X</button>`;
       savedColorsGrid.appendChild(miniCard);
     });
+    document
+      .querySelectorAll("#saved-colors-grid .delete-btn")
+      .forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          const colors = getSavedColors();
+          colors.splice(e.target.getAttribute("data-index"), 1);
+          localStorage.setItem("myColors", JSON.stringify(colors));
+          displaySavedColors();
+        });
+      });
   }
 
+  // --- TÍNH NĂNG 5: ĐỒNG BỘ TOÀN CẦU (FIREBASE REALTIME DATABASE) ---
+  const globalColorsGrid = document.getElementById("global-colors-grid");
+
+  // Nhấn nút lưu: Vừa lưu máy mình, vừa bắn thẳng lên vũ trụ Firebase
   saveColorBtn.addEventListener("click", () => {
     const currentHex = hexInput.value.toUpperCase();
     const currentName = colorNameSpan.textContent;
@@ -142,24 +151,47 @@ document.addEventListener("DOMContentLoaded", () => {
       currentName === "🔄 Đang tra cứu..."
     )
       return;
-    const colors = getSavedColors();
-    if (colors.some((c) => c.hex === currentHex)) {
-      alert("Màu này đã có rồi nhé!");
-      return;
+
+    // A. Lưu LocalStorage cá nhân
+    const localColors = getSavedColors();
+    if (!localColors.some((c) => c.hex === currentHex)) {
+      localColors.push({ hex: currentHex, name: currentName });
+      localStorage.setItem("myColors", JSON.stringify(localColors));
+      displaySavedColors();
     }
-    colors.push({ hex: currentHex, name: currentName });
-    localStorage.setItem("myColors", JSON.stringify(colors));
-    displaySavedColors();
+
+    // B. ĐẨY LÊN CLOUD DATABASE: Phát sóng cho toàn thế giới nhìn thấy
+    push(globalColorsRef, {
+      hex: currentHex,
+      name: currentName,
+      timestamp: Date.now(), // Lưu mốc thời gian để sắp xếp màu mới lên đầu
+    }).catch((err) => console.error("Lỗi đẩy lên Cloud:", err));
   });
 
-  function deleteColor(index) {
-    const colors = getSavedColors();
-    colors.splice(index, 1);
-    localStorage.setItem("myColors", JSON.stringify(colors));
-    displaySavedColors();
-  }
+  // TÍNH NĂNG "THẦN THÁNH": Lắng nghe Cloud biến động liên tục (Real-time Listener)
+  onValue(globalColorsRef, (snapshot) => {
+    globalColorsGrid.innerHTML = "";
+    const data = snapshot.val();
 
-  // Chạy kích hoạt dữ liệu ban đầu
+    if (!data) {
+      globalColorsGrid.innerHTML =
+        '<span style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">Chưa có cao thủ nào lưu màu lên bảng vàng quốc tế.</span>';
+      return;
+    }
+
+    // Chuyển Object dữ liệu từ Firebase thành mảng và sắp xếp theo thời gian mới nhất
+    const items = Object.values(data).sort((a, b) => b.timestamp - a.timestamp);
+
+    // Vẽ danh sách Bảng Vàng Quốc Tế
+    items.forEach((colorObj) => {
+      const miniCard = document.createElement("div");
+      miniCard.style.cssText = `background: ${colorObj.hex}; color: #fff; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); display: flex; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);`;
+      miniCard.innerHTML = `<span>${colorObj.name} (${colorObj.hex})</span>`;
+      globalColorsGrid.appendChild(miniCard);
+    });
+  });
+
+  // Kích hoạt nạp dữ liệu lần đầu
   fetchColorName(hexInput.value);
   displaySavedColors();
 });

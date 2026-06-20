@@ -318,6 +318,7 @@ body {
 .color-section__header h2 {
   font-size: 2.25rem;
   font-weight: 700;
+  text-transform: uppercase;
   margin-bottom: 0.75rem;
   letter-spacing: -0.5px;
 }
