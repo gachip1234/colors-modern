@@ -1,0 +1,395 @@
+/* ==========================================================================
+   1. RESET CSS & ĐỊNH CẤU TRÚC NỀN TẢNG
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Tích hợp font Be Vietnam Pro em đã nhúng từ Google Fonts */
+  font-family:
+    "Be Vietnam Pro",
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+/* ==========================================================================
+   2. HỆ THỐNG BIẾN MÀU (CSS VARIABLES) - KHÔNG GIAN MÀU OKLCH
+   ========================================================================== */
+/* Giao diện Sáng (Light Mode) - Mặc định */
+:root {
+  /* Cấu trúc oklch: Độ sáng% | Độ đậm màu | Góc màu (0-360) */
+  --bg-main: oklch(98% 0.005 240); /* Nền xám trắng cực dịu mắt */
+  --bg-card: oklch(100% 0 0); /* Nền thẻ trắng tinh */
+  --text-main: oklch(25% 0.02 240); /* Chữ màu xám tối */
+  --text-muted: oklch(50% 0.02 240); /* Chữ phụ màu xám nhạt */
+
+  --color-primary: oklch(60% 0.18 140); /* Màu chủ đạo: Xanh Mint hiện đại */
+  --color-accent: oklch(65% 0.22 260); /* Màu nhấn: Tím ánh xanh */
+  --border-color: oklch(90% 0.01 240); /* Đường viền mảnh */
+}
+
+/* Giao diện Tối (Dark Mode) - Tự động kích hoạt theo hệ điều hành */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-main: oklch(15% 0.015 240); /* Nền tối sâu */
+    --bg-card: oklch(22% 0.015 240); /* Nền thẻ xám đen */
+    --text-main: oklch(95% 0.005 240); /* Chữ trắng sáng */
+    --text-muted: oklch(70% 0.01 240); /* Chữ phụ xám sáng */
+
+    --color-primary: oklch(75% 0.15 140); /* Tăng độ sáng màu Mint ở nền tối */
+    --border-color: oklch(30% 0.015 240);
+  }
+}
+
+/* Áp dụng màu nền và màu chữ toàn trang */
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  line-height: 1.6;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* ==========================================================================
+   3. THANH ĐIỀU HƯỚNG (MAIN HEADER) - CẤU TRÚC FLEXBOX
+   ========================================================================== */
+.main-header {
+  display: flex;
+  justify-content: space-between; /* Đẩy logo sang trái, menu sang phải */
+  align-items: center; /* Căn giữa các phần tử theo chiều dọc */
+  padding: 1.25rem 5%;
+  background-color: var(--bg-card);
+  border-radius: 10px;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow:
+    0 1px 0 red,
+    0 2px 0 blue,
+    0 3px 5px green;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Khối Logo */
+.main-header__logo {
+  display: flex;
+  align-items: center;
+  border-top-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  cursor: pointer;
+  gap: 5px; /* Khoảng cách giữa ảnh logo và chữ */
+  transition: all 0.5s ease;
+
+  &:hover .main-header__logo-img {
+    border-top-right-radius: 50%;
+    border-bottom-left-radius: 50%;
+    border-top-left-radius: 0;
+    border-bottom-right-radius: 0;
+    filter: drop-shadow(1px 1px 1px var(--color-primary));
+  }
+
+  & h1 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  &:hover {
+    filter: drop-shadow(1px 1px 1px var(--color-primary));
+  }
+}
+
+.main-header__logo-img {
+  width: 50px;
+  height: 50px;
+  border-top-left-radius: 50%;
+  border-bottom-right-radius: 50%;
+  box-shadow:
+    2px 0 3px red,
+    -2px 0 3px blue,
+    0 2px 3px green;
+  object-position: center;
+  object-fit: contain;
+  transition: all 0.5s ease;
+}
+.dialog-close-btn {
+  display: none;
+}
+.main-header__logo h1 span {
+  color: var(--color-primary); /* Đổi màu chữ "Color" theo biến primary */
+}
+
+/* NÚT HAMBURGER MENU (Mặc định ẩn trên máy tính) */
+.hamburger-menu {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 21px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 110;
+}
+
+.hamburger-menu__bar {
+  width: 100%;
+  height: 3px;
+  background-color: var(--text-main);
+  border-radius: 4px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* ==========================================================================
+   ÁP DỤNG DIALOG TRÊN MÁY TÍNH (DESKTOP MẶC ĐỊNH)
+   ========================================================================== */
+.main-header__dialog {
+  display: block; /* Hiện thị dạng khối ngang bình thường trên PC */
+  position: static; /* Hủy bỏ cơ chế pop-up đè của dialog mặc định */
+  background: transparent; /* Xóa nền trắng mặc định của hệ thống */
+  border: none;
+  padding: 0;
+  width: auto;
+  height: auto;
+  margin: 0;
+}
+
+/* Hủy bỏ lớp phông mờ khi ở màn hình máy tính */
+.main-header__dialog::backdrop {
+  display: none;
+}
+
+/* Khối Menu Nav bên trong Dialog */
+.main-header__menu {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+}
+
+.main-header__link {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.main-header__link:hover,
+.main-header__link--active {
+  color: var(--color-primary); /* Đổi sang màu Mint khi hover/active */
+}
+
+/* ==========================================================================
+   4. RESPONSIVE & BIẾN ĐỔI DIALOG (MOBILE & TABLET < 768PX)
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Hiện nút bấm Hamburger */
+  .hamburger-menu {
+    display: flex;
+  }
+
+  /* Tái cấu trúc Dialog trở thành một Sidebar trượt từ cạnh phải */
+  .main-header__dialog {
+    display: none; /* Khôi phục tính năng đóng/mở mặc định của Dialog */
+    position: fixed;
+
+    /* ÉP SÁT RÌA PHẢI BẰNG THUỘC TÍNH NÀY */
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: auto;
+    margin-right: 0; /* Khóa chặt dialog vào cạnh phải màn hình */
+
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 70%; /* Chiếm đúng 70% chiều rộng từ bên phải đếm vào */
+    height: 100vh;
+    max-height: 100vh;
+
+    background-color: var(--bg-card);
+    border: none;
+    padding: 6rem 2rem 2rem 2rem;
+
+    /* Hiệu ứng trượt mượt mà ẩn hiện */
+    transform: translateX(100%);
+    transition:
+      transform 0.3s ease-in-out,
+      display 0.3s ease-in-out allow-discrete;
+  }
+
+  /* Khi Dialog kích hoạt trạng thái [open] thông qua JS (.showModal) */
+  .main-header__dialog[open] {
+    display: block;
+    transform: translateX(0);
+  }
+
+  /* LỚP NỀN MỜ PHÍA SAU DIALOG (Đặc quyền xịn sò của thẻ dialog) */
+  .main-header__dialog::backdrop {
+    display: block;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px); /* Làm mờ trang web phía sau */
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  .main-header__dialog[open]::backdrop {
+    opacity: 1;
+  }
+
+  /* Xếp menu điều hướng thành một hàng dọc trên điện thoại */
+  .main-header__menu {
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .main-header__link {
+    font-size: 1.2rem;
+    display: block;
+  }
+
+  /* HIỆU ỨNG XOAY NÚT HAMBURGER THÀNH DẤU "X" */
+  .hamburger-menu.is-open .hamburger-menu__bar:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+    background-color: var(--color-primary);
+  }
+
+  .hamburger-menu.is-open .hamburger-menu__bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger-menu.is-open .hamburger-menu__bar:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+    background-color: var(--color-primary);
+  }
+  /* STYLE CHO NÚT X ĐÓNG MENU TRONG DIALOG */
+  .dialog-close-btn {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem; /* Đặt ở góc trên bên phải của thanh Sidebar */
+
+    background: oklch(60% 0.25 20); /* Màu đỏ rực rỡ */
+    color: #ffffff; /* Chữ X màu trắng */
+
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%; /* Biến nút thành hình tròn nhỏ xinh */
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition:
+      transform 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .dialog-close-btn:hover {
+    background: oklch(50% 0.25 20); /* Đỏ đậm hơn khi dí chuột */
+    transform: scale(1.1);
+  }
+}
+
+/* ==========================================================================
+   5. KHU VỰC NỘI DUNG CHÍNH (CONTENT WRAPPER & GRID)
+   ========================================================================== */
+.content-wrapper {
+  max-width: 1200px;
+  margin: 4rem auto;
+  padding: 0 1.5rem;
+}
+
+/* Tiêu đề section */
+.color-section__header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.color-section__header h2 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.5px;
+}
+
+.color-section__header p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+/* Bố cục lưới thẻ thông minh bằng CSS Grid */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+/* Kiểu dáng từng chiếc thẻ (Color Card) */
+.color-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 2.25rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.color-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.08);
+}
+
+.color-card__title {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-accent);
+}
+
+.color-card__desc {
+  color: var(--text-muted);
+  margin-bottom: 1.75rem;
+  font-size: 0.95rem;
+  text-align: justify;
+}
+
+/* Định dạng khối hiển thị mã code */
+.color-card__code,
+.color-card__pre {
+  background-color: var(--bg-main);
+  padding: 0.85rem 1.25rem;
+  border-radius: 10px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  display: block;
+  overflow-x: auto;
+  border: 1px dashed var(--border-color);
+  transition: all 0.2s ease;
+}
+
+/* ==========================================================================
+   6. CHÂN TRANG (FOOTER)
+   ========================================================================== */
+.main-footer {
+  text-align: center;
+  padding: 2.5rem;
+  margin-top: 6rem;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  background-color: var(--bg-card);
+}

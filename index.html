@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSS Color Hub - Kỷ Nguyên OKLCH & Biến Màu Hiện Đại</title>
+    <meta
+      name="description"
+      content="Công cụ tra cứu không gian màu mới oklch, oklab và cấu trúc biến root CSS chuẩn BEM dành cho Developer và Designer."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="main-header__logo">
+        <img
+          src="./src/logo.svg"
+          alt="Color Utility Hub Logo"
+          class="main-header__logo-img"
+        />
+        <h1>Dynamic<span>Color</span></h1>
+      </div>
+
+      <button class="hamburger-menu" aria-label="Toggle menu">
+        <span class="hamburger-menu__bar"></span>
+        <span class="hamburger-menu__bar"></span>
+        <span class="hamburger-menu__bar"></span>
+      </button>
+
+      <dialog
+        class="main-header__dialog"
+        id="mobile-menu-dialog"
+        role="navigation"
+      >
+        <button
+          class="dialog-close-btn"
+          id="close-menu-btn"
+          aria-label="Close menu"
+        >
+          ✕
+        </button>
+        <ul class="main-header__menu">
+          <li class="main-header__item">
+            <a
+              href="#spaces"
+              class="main-header__link main-header__link--active"
+              >Không gian màu</a
+            >
+          </li>
+          <li class="main-header__item">
+            <a href="#root-generator" class="main-header__link"
+              >Mẫu CSS :root</a
+            >
+          </li>
+          <li class="main-header__item">
+            <a href="#docs" class="main-header__link">Tài liệu chuẩn W3C</a>
+          </li>
+        </ul>
+      </dialog>
+    </header>
+
+    <main class="content-wrapper">
+      <section id="spaces" class="color-section">
+        <header class="color-section__header">
+          <h2>Bứt phá giới hạn với Không gian màu hiện đại</h2>
+          <p>
+            Khám phá lý do tại sao OKLCH, OKLAB đang dần thay thế HEX và HSL
+            trong thiết kế cao cấp.
+          </p>
+        </header>
+
+        <div class="color-grid">
+          <article class="color-card">
+            <h3 class="color-card__title">OKLCH là gì?</h3>
+            <p class="color-card__desc">
+              Là không gian màu dựa trên cảm nhận thị giác của con người. Giúp
+              kiểm soát độ sáng độc lập.
+            </p>
+            <code class="color-card__code">color: oklch(60% 0.15 134);</code>
+          </article>
+
+          <article class="color-card">
+            <h3 class="color-card__title">Sức mạnh của CSS :root</h3>
+            <p class="color-card__desc">
+              Cách tổ chức biến màu tập trung tại gốc tài liệu giúp việc thay
+              đổi giao diện chỉ trong 1 dòng code.
+            </p>
+            <pre class="color-card__pre"><code>:root {
+  --color-primary: oklch(55% 0.2 260);
+}</code></pre>
+          </article>
+        </div>
+      </section>
+
+      <section
+        id="root-generator"
+        class="color-section"
+        style="margin-top: 5rem"
+      >
+        <header class="color-section__header">
+          <h2>Trình Phối Màu & Xác Định Tên Màu Thông Minh</h2>
+          <p>
+            Nhập mã màu HEX của em để khám phá tên gọi tiêu chuẩn và dải tương
+            phản tương ứng.
+          </p>
+        </header>
+
+        <div
+          class="color-lab-box"
+          style="
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+          "
+        >
+          <div class="input-group" style="margin-bottom: 1.5rem">
+            <input
+              type="text"
+              id="hex-input"
+              value="#60a5fa"
+              placeholder="Nhập mã HEX (VD: #60a5fa)"
+              style="
+                padding: 0.75rem 1rem;
+                border-radius: 8px;
+                border: 1px solid var(--border-color);
+                background: var(--bg-main);
+                color: var(--text-main);
+                font-size: 1rem;
+                width: 70%;
+                text-align: center;
+                font-weight: bold;
+              "
+            />
+          </div>
+
+          <div
+            id="color-preview"
+            style="
+              height: 120px;
+              border-radius: 12px;
+              margin-bottom: 1.5rem;
+              transition: background-color 0.3s ease;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: bold;
+              color: #fff;
+              text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+              background-color: #60a5fa;
+            "
+          >
+            #60A5FA
+          </div>
+
+          <div
+            class="color-info"
+            style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem"
+          >
+            Tên gọi quốc tế:
+            <span id="color-name" style="color: var(--color-primary)"
+              >Đang tải...</span
+            >
+          </div>
+
+          <button
+            id="save-color-btn"
+            style="
+              padding: 0.75rem 1.5rem;
+              background: var(--color-primary);
+              color: #fff;
+              border: none;
+              border-radius: 8px;
+              font-weight: bold;
+              cursor: pointer;
+              font-size: 1rem;
+              width: 100%;
+              transition: opacity 0.2s ease;
+            "
+          >
+            💾 Lưu màu này vào bộ sưu tập
+          </button>
+
+          <div
+            class="saved-colors-section"
+            style="margin-top: 2.5rem; text-align: left"
+          >
+            <h4
+              style="
+                font-size: 1.1rem;
+                margin-bottom: 1rem;
+                border-bottom: 1px dashed var(--border-color);
+                padding-bottom: 0.5rem;
+              "
+            >
+              🎨 Bộ sưu tập màu của em:
+            </h4>
+            <div
+              id="saved-colors-grid"
+              style="display: flex; flex-wrap: wrap; gap: 10px"
+            ></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="main-footer">
+      <p>
+        &copy; 2026 - Được thiết kế bởi Dev Pro tương lai dưới sự hướng dẫn của
+        Cô Giáo Công Nghệ.
+      </p>
+    </footer>
+
+    <script src="./js/main.js"></script>
+  </body>
+</html>
